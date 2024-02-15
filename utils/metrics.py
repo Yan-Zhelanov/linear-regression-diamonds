@@ -1,8 +1,8 @@
 import numpy as np
 
 
-def RMSE(targets: np.ndarray, predictions: np.ndarray):
-    """Computes RMSE.
+def get_rmse(targets: np.ndarray, predictions: np.ndarray) -> float:
+    """Compute RMSE.
 
     Args:
         targets: observed values
