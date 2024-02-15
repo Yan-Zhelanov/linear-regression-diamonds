@@ -3,3 +3,4 @@ pandas~=1.5.3
 easydict~=1.10
 plotly~=5.14.1
 seaborn~=0.13.2
+pre-commit==3.6.1
