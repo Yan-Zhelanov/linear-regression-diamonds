@@ -7,8 +7,8 @@ def get_rmse(targets: np.ndarray, predictions: np.ndarray) -> float:
     Args:
         targets: observed values
         predictions: predicted values
+
+    Returns:
+        float: computed RMSE value.
     """
-    # TODO: implement RMSE calculation
-    #       RMSE = sqrt((predictions - targets)^2/ n),
-    #       where n - the number of observations
-    raise NotImplementedError
+    return np.sqrt(np.mean((targets - predictions)**2))
