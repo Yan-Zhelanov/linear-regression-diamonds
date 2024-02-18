@@ -72,7 +72,7 @@ class LinearRegression:
                 as Φ^+ = (Φ^T * Φ)^(-1) * Φ^T
             - t is the target vector.
         """
-        pass
+        return np.dot(pseudo_inverse_plan_matrix, targets)
 
     def _compute_model_prediction(self, features: np.ndarray) -> np.ndarray:
         """Computes the predictions of the model.
