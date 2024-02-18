@@ -17,7 +17,7 @@ def main():
     lin_reg_model = LinearRegression(
         number_bases=train_data['inputs'].shape[1] + 1,
     )
-    lin_reg_model.train(train_data['inputs'], train_data['targets'])
+    lin_reg_model.fit(train_data['inputs'], train_data['targets'])
 
     train_predictions = lin_reg_model(train_data['inputs'])
     train_rmse = get_rmse(train_data['targets'], train_predictions)
