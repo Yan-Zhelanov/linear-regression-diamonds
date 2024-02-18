@@ -20,7 +20,7 @@ class LinearRegression:
 
     @staticmethod
     def _pseudo_inverse_matrix(
-        matrix: np.ndarray, regularization: float = None,
+        matrix: np.ndarray, regularization: float | None = None,
     ) -> np.ndarray:
         """Compute the pseudo-inverse of a matrix using SVD.
 
@@ -46,9 +46,24 @@ class LinearRegression:
 
         Note that Σ'_[0,0] = 1/Σ_{i,j}
         """
-        pass
+        left_singular, singular, right_singular_transposed = np.linalg.svd(
+            matrix,
+        )
+        pseudo_inverse_sigma = np.zeros((matrix.shape[1], matrix.shape[0]))
+        epsilon = sys.float_info.epsilon
+        threshold = epsilon * max(matrix.shape) * max(singular)
+        mask = singular > threshold
+        if regularization is None:
+            pseudo_inverse_sigma[mask] = 1 / singular[mask]
+        else:
+            pseudo_inverse_sigma[mask] = singular[mask] / (
+                singular[mask]**2 + regularization
+            )
+        return left_singular @ pseudo_inverse_sigma @ right_singular_transposed
 
-    def _compute_weights(self, pseudo_inverse_plan_matrix: np.ndarray, targets: np.ndarray) -> None:
+    def _compute_weights(
+        self, pseudo_inverse_plan_matrix: np.ndarray, targets: np.ndarray,
+    ) -> None:
         """Computes the optimal weights using the normal equation.
 
         The weights (w) can be computed using the formula: w = Φ^+ * t
@@ -88,7 +103,8 @@ class LinearRegression:
         For regularization:
             E(w) = (1/N) * ∑(t - Φ * w^T)^2 + λ * w^T * w
 
-        TODO: Implement this method using numpy operations to compute the mean squared error. Do not use loops
+        TODO: Implement this method using numpy operations to compute the mean
+            squared error. Do not use loops
         TODO: Add regularization
         """
         pass
