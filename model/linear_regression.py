@@ -7,21 +7,20 @@ import numpy as np
 class LinearRegression:
     """A class for linear regression model implementation."""
 
-    def __init__(self, number_bases: int, reg_coefficient: float = 0) -> None:
+    def __init__(
+        self, number_bases: int, regularization: float = 0,
+    ) -> None:
         """Initialize the linear regression model.
 
         Args:
             number_bases: the number of basis functions (or model weights
                 vector shape in case of vanilla linear regression).
-            reg_coefficient: regularization coefficient.
+            regularization: regularization coefficient.
         """
         self._weights = np.random.randn(number_bases)
-        self._reg_coefficient = reg_coefficient
+        self._regularization = regularization
 
-    @staticmethod
-    def _pseudo_inverse_matrix(
-        matrix: np.ndarray, regularization: float | None = None,
-    ) -> np.ndarray:
+    def _pseudo_inverse_matrix(self, matrix: np.ndarray) -> np.ndarray:
         """Compute the pseudo-inverse of a matrix using SVD.
 
         The pseudo-inverse (Φ^+) of the design matrix Φ can be computed using
@@ -53,12 +52,9 @@ class LinearRegression:
         epsilon = sys.float_info.epsilon
         threshold = epsilon * max(matrix.shape) * max(singular)
         mask = singular > threshold
-        if regularization is None:
-            pseudo_inverse_sigma[mask] = 1 / singular[mask]
-        else:
-            pseudo_inverse_sigma[mask] = singular[mask] / (
-                singular[mask]**2 + regularization
-            )
+        pseudo_inverse_sigma[mask] = singular[mask] / (
+            singular[mask]**2 + self._regularization
+        )
         return left_singular @ pseudo_inverse_sigma @ right_singular_transposed
 
     def _compute_weights(
