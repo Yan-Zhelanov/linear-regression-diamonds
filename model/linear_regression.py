@@ -3,6 +3,8 @@ import sys
 
 import numpy as np
 
+from utils.metrics import get_rmse
+
 
 class LinearRegression:
     """A class for linear regression model implementation."""
@@ -85,7 +87,9 @@ class LinearRegression:
         """
         return np.dot(features, self._weights.T)
 
-    def _compute_cost_function(self, plan_matrix, targets):
+    def _compute_cost_function(
+        self, plan_matrix: np.ndarray, targets: np.ndarray,
+    ) -> float:
         """Computes the cost function value for the current weights.
 
         The cost function E(w) represents the mean squared error and is given
@@ -103,13 +107,11 @@ class LinearRegression:
             squared error. Do not use loops
         TODO: Add regularization
         """
-        pass
+        return get_rmse(targets, self._compute_model_prediction(plan_matrix))
 
     def fit(self, inputs: np.ndarray, targets: np.ndarray) -> None:
         """Trains the model using the normal equation."""
         pseudo_inverse_matrix = self._pseudo_inverse_matrix(inputs)
-
-        # Training process
         self._compute_weights(pseudo_inverse_matrix, targets)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
