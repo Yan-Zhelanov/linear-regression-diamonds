@@ -87,7 +87,7 @@ class LinearRegression:
             OR
             - `a @ b`
         """
-        pass
+        return np.dot(features, self._weights.T)
 
     def _compute_cost_function(self, plan_matrix, targets):
         """Computes the cost function value for the current weights.
