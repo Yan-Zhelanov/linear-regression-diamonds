@@ -1,4 +1,5 @@
 import warnings
+
 import numpy as np
 
 
@@ -41,7 +42,9 @@ class BasisFunctionTransform:
         self.params = {}
 
         if self.basis_function is None:
-            warnings.warn(f"Function set_type '{function_type}' is not recognized. Using default function.")
+            warnings.warn(
+                f"Function set_type '{function_type}' is not recognized. Using default function.",
+            )
             self.basis_function = self._default_function
 
     def _polynomial(self, x: np.ndarray) -> np.ndarray:
@@ -163,10 +166,9 @@ class BasisFunctionTransform:
 
     def preprocess(self, x: np.ndarray):
         """Makes preprocessing for the chosen basis function if needed."""
-        if self.basis_function.__name__ == "_rbf":
+        if self.basis_function.__name__ == '_rbf':
             return self.basis_function(x, preprocess=True)
-        else:
-            return self.basis_function(x)
+        return self.basis_function(x)
 
     def transform(self, x: np.ndarray):
         """Makes feature transformation according to the chosen basis function."""
