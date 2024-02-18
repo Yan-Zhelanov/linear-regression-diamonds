@@ -14,7 +14,9 @@ def main():
     train_data = dataset('train')
     valid_data = dataset('valid')
 
-    lin_reg_model = LinearRegression(m=train_data['inputs'].shape[1] + 1)
+    lin_reg_model = LinearRegression(
+        number_bases=train_data['inputs'].shape[1] + 1,
+    )
     lin_reg_model.train(train_data['inputs'], train_data['targets'])
 
     train_predictions = lin_reg_model(train_data['inputs'])
