@@ -1,45 +1,51 @@
+from enum import IntEnum
+
 import numpy as np
 
 from utils.enums import PreprocessingType
+
+IntOrFloat = int | float
+
+LOWER_BOUND = -1
+UPPER_BOUND = 1
 
 
 class Preprocessing(object):
     """A class for data preprocessing."""
 
     def __init__(self, preprocess_type: PreprocessingType):
-        self.preprocess_type = preprocess_type
+        self._preprocess_type: IntEnum = preprocess_type
+        self._min: IntOrFloat = 0
+        self._max: IntOrFloat = 0
+        self._mean: IntOrFloat = 0
+        self._std: IntOrFloat = 0
+        self._preprocess_func = getattr(self, self._preprocess_type.name)
 
-        # A dictionary with the following keys and values:
-        #    - {'min': min values, 'max': max values} when preprocess_type is PreprocessingType.normalization
-        #    - {'mean': mean values, 'std': std values} when preprocess_type is PreprocessingType.standardization
-        self.params = None
+    def fit(self, features: np.ndarray) -> None:
+        """Initialize preprocessing function on training data.
 
-        # Select the preprocess function according to self.preprocess_type
-        self.preprocess_func = getattr(self, self.preprocess_type.name)
+        Args:
+            features: feature array.
+        """
+        self._mean = np.mean(features)
+        self._std = np.std(features)
+        self._min = np.min(features)
+        self._max = np.max(features)
 
-    def normalization(
-        self, features: np.ndarray, init: bool = False,
-    ) -> np.ndarray:
+    def normalization(self, features: np.ndarray) -> np.ndarray:
         """Transform x by scaling each feature to a range [-1, 1].
 
         Using self.params['min'] and self.params['max'].
 
         Args:
             features: feature array.
-            init: initialization flag.
 
         Returns:
             np.ndarray: normilized features.
         """
-        if init:
-            # TODO: calculate min and max for each column in x with np.min, np.max
-            #       store the values in self.params['min'] and self.params['max']
-            pass
-
-        # TODO: implement data normalization
-        #       normalized_x = a + (b - a) * (x - self.params['min']) / (self.params['max'] - self.params['min']),
-        #       where a = -1, b = 1
-        raise NotImplementedError
+        return LOWER_BOUND + (UPPER_BOUND - LOWER_BOUND) * (
+            features - self._min
+        ) / (self._max - self._min)
 
     def standardization(
         self, features: np.ndarray, init: bool = False,
@@ -53,24 +59,4 @@ class Preprocessing(object):
         Returns:
             np.ndarray: standardized features.
         """
-        if init:
-            # TODO: calculate mean and std for each column in x with np.mean, np.std
-            #       store the values in self.params['mean'] and self.params['std']
-            pass
-
-        # TODO: implement data standardization
-        #       standardized_x = (x - self.params['mean']) / self.params['std']
-        raise NotImplementedError
-
-    def train(self, features: np.ndarray) -> np.ndarray:
-        """Initialize preprocessing function on training data."""
-        return self.preprocess_func(features, init=True)
-
-    def __call__(self, features: np.ndarray) -> np.ndarray:
-        """Return preprocessed data."""
-        if self.params is None:
-            raise ValueError(
-                f'{self.preprocess_type.name} instance is not trained yet.'
-                + "Please call 'train' first.",
-            )
-        return self.preprocess_func(features, init=False)
+        return (features - self._mean) / self._std
