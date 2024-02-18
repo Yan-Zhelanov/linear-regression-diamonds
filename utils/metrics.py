@@ -11,4 +11,17 @@ def get_rmse(targets: np.ndarray, predictions: np.ndarray) -> float:
     Returns:
         float: computed RMSE value.
     """
-    return np.sqrt(np.mean((targets - predictions)**2))
+    return np.sqrt(get_mse(targets, predictions))
+
+
+def get_mse(targets: np.ndarray, predictions: np.ndarray) -> float:
+    """Compute MSE.
+
+    Args:
+        targets: observed values
+        predictions: predicted values
+
+    Returns:
+        float: computed MSE value.
+    """
+    return np.mean((targets - predictions)**2)
