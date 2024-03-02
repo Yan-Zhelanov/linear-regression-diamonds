@@ -30,7 +30,20 @@ class Preprocessing(object):
         self._min = np.min(features)
         self._max = np.max(features)
 
-    def normalization(self, features: np.ndarray) -> np.ndarray:
+    def preprocess(self, features: np.ndarray) -> np.ndarray:
+        """Preprocesses features.
+
+        Args:
+            features: feature array.
+
+        Returns:
+            np.ndarray: preprocessed features.
+        """
+        if self._preprocess_type is PreprocessingType.NORMALIZATION:
+            return self._normalization(features)
+        return self._standardization(features)
+
+    def _normalization(self, features: np.ndarray) -> np.ndarray:
         """Transform x by scaling each feature to a range [-1, 1].
 
         Using self.params['min'] and self.params['max'].
@@ -45,7 +58,7 @@ class Preprocessing(object):
             features - self._min
         ) / (self._max - self._min)
 
-    def standardization(
+    def _standardization(
         self, features: np.ndarray, init: bool = False,
     ) -> np.ndarray:
         """Standardize x with self.params['mean'] and self.params['std']
