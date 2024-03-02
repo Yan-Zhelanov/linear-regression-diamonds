@@ -1,30 +1,42 @@
 import os
+
 import numpy as np
 import pandas as pd
 
+from config.data_config import Config
 from utils.common_functions import read_dataframe_file
 from utils.enums import SetType
 from utils.preprocessing import Preprocessing
 
 
-class DiamondsDataset:
-    """A class for the Diamonds dataset. This class reads the data and preprocesses it."""
+class DiamondsDataset(object):
+    """A class for the Diamonds dataset.
 
-    def __init__(self, config):
-        """Initializes the Diamonds dataset class instance."""
-        self.config = config
+    This class reads the data and preprocesses it.
+    """
 
-        # Preprocessing class initialization
-        self.preprocessing = Preprocessing(config.preprocess_type)
+    def __init__(self, config: Config):
+        """Initialize the Diamonds dataset class instance.
 
-        # Reads the data
-        self.data = {}
+        Args:
+            config: The data configuration.
+        """
+        self._config = config
+        self._preprocessing = Preprocessing(config.PREPROCESS_TYPE)
+        self._data = {}
         for set_type in SetType:
-            self.data[set_type.name] = self.dataframe_preprocessing(
-                os.path.join(config.path_to_data, config.type[set_type.name]), set_type
+            self._data[set_type.name] = self.dataframe_preprocessing(
+                os.path.join(config.PATH_TO_DATA, config.TYPE[set_type.name]),
+                set_type,
             )
 
-    def dataframe_preprocessing(self, path_to_dataframe: str, set_type: SetType) -> dict:
+    def __call__(self, set_type: str):
+        """Return preprocessed data."""
+        return self._data[set_type]
+
+    def dataframe_preprocessing(
+        self, path_to_dataframe: str, set_type: SetType,
+    ) -> dict:
         """Preprocesses data.
 
         Args:
@@ -32,22 +44,19 @@ class DiamondsDataset:
             set_type: data set_type from SetType
 
         Returns:
-            A dict with the following data: {'inputs: features (numpy.ndarray), 'targets': targets (numpy.ndarray)}
+            dict: A dict with the following data:
+                {'inputs: features (numpy.ndarray),
+                'targets': targets (numpy.ndarray)}
         """
-        # TODO:
-        #  1) Read a dataframe file using the read_dataframe_file(path_to_dataframe) function
-        #  2) Drop duplicates from dataframe
-        #  3) Convert categorical features to one-hot encoding vectors (columns ['color', 'clarity', 'cut'])
-        #  4) Create features from all columns except 'price':
-        #       - transform them to numpy.ndarray with dtype=np.float64
-        #       - apply self.preprocessing according SetType:
-        #              if set_type is SetType.train, call self.preprocessing.train(),
-        #              otherwise call self.preprocessing()
-        #  6) Create targets from columns 'price' (except when set_type is SetType.test):
-        #       - transform to numpy.ndarray with dtype=np.float64
-        #  7) Return arrays of features and targets as a dict
-        raise NotImplementedError
-
-    def __call__(self, set_type: str):
-        """Returns preprocessed data."""
-        return self.data[set_type]
+        df = read_dataframe_file(path_to_dataframe)
+        df.drop_duplicates()
+        df = pd.get_dummies(df, columns=['color', 'clarity', 'cut'])
+        features = df.drop('price', axis=1).to_numpy(dtype=np.float64)
+        if set_type is SetType.TRAIN:
+            self._preprocessing.fit(features)
+        else:
+            features = self._preprocessing.preprocess(features)
+        target = None
+        if set_type is not SetType.TEST:
+            target = df['price'].to_numpy(dtype=np.float64)
+        return {'inputs': features, 'targets': target}
