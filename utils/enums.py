@@ -1,5 +1,16 @@
-from enum import IntEnum
+from enum import Enum
 
-SetType = IntEnum('SetType', ('train', 'valid', 'test'))
 
-PreprocessingType = IntEnum('PreprocessingType', ('normalization', 'standardization'))
+class SetType(Enum):
+    """Data set type."""
+
+    TRAIN = 1
+    VALID = 2
+    TEST = 3
+
+
+class PreprocessingType(Enum):
+    """Preprocessing type enum."""
+
+    NORMALIZATION = 1
+    STANDARTIZATION = 2

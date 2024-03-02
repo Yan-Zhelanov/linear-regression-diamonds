@@ -1,5 +1,3 @@
-from enum import IntEnum
-
 import numpy as np
 
 from utils.enums import PreprocessingType
@@ -14,7 +12,7 @@ class Preprocessing(object):
     """A class for data preprocessing."""
 
     def __init__(self, preprocess_type: PreprocessingType):
-        self._preprocess_type: IntEnum = preprocess_type
+        self._preprocess_type = preprocess_type
         self._min: IntOrFloat = 0
         self._max: IntOrFloat = 0
         self._mean: IntOrFloat = 0
