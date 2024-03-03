@@ -17,7 +17,6 @@ class Preprocessing(object):
         self._max: IntOrFloat = 0
         self._mean: IntOrFloat = 0
         self._std: IntOrFloat = 0
-        self._preprocess_func = getattr(self, self._preprocess_type.name)
 
     def fit(self, features: np.ndarray) -> None:
         """Initialize preprocessing function on training data.
