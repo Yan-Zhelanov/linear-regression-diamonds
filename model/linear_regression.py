@@ -48,7 +48,7 @@ class LinearRegression:
         Note that Σ'_[0,0] = 1/Σ_{i,j}
         """
         left_singular, singular, right_singular_transposed = np.linalg.svd(
-            matrix,
+            matrix, full_matrices=False,
         )
         pseudo_inverse_sigma = np.zeros((matrix.shape[1], matrix.shape[0]))
         epsilon = sys.float_info.epsilon
