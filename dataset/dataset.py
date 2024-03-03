@@ -52,7 +52,9 @@ class DiamondsDataset(object):
         df = df.drop('Unnamed: 0', axis=1, errors='ignore')
         df.drop_duplicates()
         df = pd.get_dummies(df, columns=['color', 'clarity', 'cut'])
-        features = df.drop('price', axis=1).to_numpy(dtype=np.float64)
+        features = df.drop('price', axis=1, errors='ignore').to_numpy(
+            dtype=np.float64,
+        )
         if set_type is SetType.TRAIN:
             self._preprocessing.fit(features)
         else:
