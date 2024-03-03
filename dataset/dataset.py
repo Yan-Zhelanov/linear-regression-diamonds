@@ -25,12 +25,12 @@ class DiamondsDataset(object):
         self._preprocessing = Preprocessing(config.PREPROCESS_TYPE)
         self._data = {}
         for set_type in SetType:
-            self._data[set_type.name] = self.dataframe_preprocessing(
+            self._data[set_type] = self.dataframe_preprocessing(
                 os.path.join(config.PATH_TO_DATA, config.TYPE[set_type.name]),
                 set_type,
             )
 
-    def __call__(self, set_type: str):
+    def __call__(self, set_type: SetType):
         """Return preprocessed data."""
         return self._data[set_type]
 
