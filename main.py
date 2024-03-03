@@ -8,10 +8,10 @@ from utils.enums import SetType
 from utils.metrics import get_rmse
 
 
-def main():
+def main() -> None:
     np.random.seed(0)
 
-    dataset = DiamondsDataset(Config)
+    dataset = DiamondsDataset(Config())
     train_data = dataset(SetType.TRAIN)
     valid_data = dataset(SetType.VALID)
 
@@ -29,7 +29,7 @@ def main():
     print(f'RMSE for train: {train_rmse}')
     print(f'RMSE for validation: {valid_rmse}')
 
-    test_data = dataset('test')
+    test_data = dataset(SetType.TEST)
     test_predictions = lin_reg_model(test_data['inputs'])
 
     test_results_df = pd.DataFrame(
