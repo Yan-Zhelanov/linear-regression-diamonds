@@ -1,18 +1,19 @@
 import numpy as np
 import pandas as pd
 
-from config.data_config import data_config
+from config.data_config import Config
 from dataset.dataset import DiamondsDataset
 from model.linear_regression import LinearRegression
+from utils.enums import SetType
 from utils.metrics import get_rmse
 
 
 def main():
     np.random.seed(0)
 
-    dataset = DiamondsDataset(data_config)
-    train_data = dataset('train')
-    valid_data = dataset('valid')
+    dataset = DiamondsDataset(Config)
+    train_data = dataset(SetType.TRAIN)
+    valid_data = dataset(SetType.VALID)
 
     lin_reg_model = LinearRegression(
         number_bases=train_data['inputs'].shape[1] + 1,
