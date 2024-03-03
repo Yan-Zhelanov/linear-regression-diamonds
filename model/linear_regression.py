@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 
-from utils.metrics import get_rmse
+from utils.metrics import get_mse
 
 
 class LinearRegression:
@@ -102,12 +102,12 @@ class LinearRegression:
 
         For regularization:
             E(w) = (1/N) * ∑(t - Φ * w^T)^2 + λ * w^T * w
-
-        TODO: Implement this method using numpy operations to compute the mean
-            squared error. Do not use loops
-        TODO: Add regularization
         """
-        return get_rmse(targets, self._compute_model_prediction(plan_matrix))
+        regularization = self._regularization * self._weights.T @ self._weights
+        return (
+            get_mse(targets, self._compute_model_prediction(plan_matrix))
+            + float(np.mean(regularization))
+        )
 
     def fit(self, inputs: np.ndarray, targets: np.ndarray) -> None:
         """Trains the model using the normal equation."""
