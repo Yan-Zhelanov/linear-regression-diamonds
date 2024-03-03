@@ -6,7 +6,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 class Config(object):
-    PATH_TO_DATA = os.path.join(ROOT_DIR, 'data', 'diamonds')
+    PATH_TO_DATA = os.path.join(ROOT_DIR, 'dataset')
     TYPE = {
         'TRAIN': 'diamonds_train.csv',
         'VALID': 'diamonds_validation.csv',
