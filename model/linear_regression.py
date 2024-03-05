@@ -50,18 +50,20 @@ class LinearRegression:
         left_singular, singular, right_singular_transposed = np.linalg.svd(
             matrix, full_matrices=False,
         )
-        pseudo_inverse_sigma = np.zeros((matrix.shape[1], matrix.shape[0]))
         epsilon = sys.float_info.epsilon
-        threshold = epsilon * max(matrix.shape) * max(singular)
-        mask = singular > threshold
-        pseudo_inverse_sigma[mask] = singular[mask] / (
-            singular[mask]**2 + self._regularization
+        threshold = epsilon * matrix.shape[0] * np.max(singular)
+        pseudo_inverse_sigma = np.zeros_like(singular)
+        pseudo_inverse_sigma = singular / (singular**2 + self._regularization)
+        pseudo_inverse_sigma[singular <= threshold] = 0
+        pseudo_inverse_sigma = np.diag(pseudo_inverse_sigma)
+        return (
+            right_singular_transposed.T @ pseudo_inverse_sigma
+            @ left_singular.T
         )
-        return left_singular @ pseudo_inverse_sigma @ right_singular_transposed
 
     def _compute_weights(
-        self, pseudo_inverse_plan_matrix: np.ndarray, targets: np.ndarray,
-    ) -> None:
+        self, plan_matrix: np.ndarray, targets: np.ndarray,
+    ) -> np.ndarray:
         """Computes the optimal weights using the normal equation.
 
         The weights (w) can be computed using the formula: w = Φ^+ * t
@@ -70,7 +72,7 @@ class LinearRegression:
                 as Φ^+ = (Φ^T * Φ)^(-1) * Φ^T
             - t is the target vector.
         """
-        return np.dot(pseudo_inverse_plan_matrix, targets)
+        return np.dot(plan_matrix, targets)
 
     def _compute_model_prediction(self, features: np.ndarray) -> np.ndarray:
         """Computes the predictions of the model.
@@ -85,7 +87,9 @@ class LinearRegression:
             OR
             - `a @ b`
         """
-        return np.dot(features, self._weights.T)
+        ones = np.ones((features.shape[0], 1))
+        augmented_features = np.concatenate((ones, features), axis=1)
+        return np.dot(augmented_features, self._weights)
 
     def _compute_cost_function(
         self, plan_matrix: np.ndarray, targets: np.ndarray,
@@ -111,8 +115,10 @@ class LinearRegression:
 
     def fit(self, inputs: np.ndarray, targets: np.ndarray) -> None:
         """Trains the model using the normal equation."""
-        pseudo_inverse_matrix = self._pseudo_inverse_matrix(inputs)
-        self._compute_weights(pseudo_inverse_matrix, targets)
+        ones = np.ones((inputs.shape[0], 1))
+        augmented_inputs = np.concatenate((ones, inputs), axis=1)
+        pseudo_inverse_matrix = self._pseudo_inverse_matrix(augmented_inputs)
+        self._weights = self._compute_weights(pseudo_inverse_matrix, targets)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
         """Returns model prediction."""
