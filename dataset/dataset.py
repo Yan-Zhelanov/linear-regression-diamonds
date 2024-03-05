@@ -57,8 +57,7 @@ class DiamondsDataset(object):
         )
         if set_type is SetType.TRAIN:
             self._preprocessing.fit(features)
-        else:
-            features = self._preprocessing.preprocess(features)
+        features = self._preprocessing.preprocess(features)
         target = None
         if set_type is not SetType.TEST:
             target = df['price'].to_numpy(dtype=np.float64)
