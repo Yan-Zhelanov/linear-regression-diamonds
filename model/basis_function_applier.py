@@ -12,7 +12,7 @@ class BasisFunctionType(Enum):
     WITHOUT = 5
 
 
-class BasisFunctionTransform(object):
+class BasisFunctionApplier(object):
     """A class for transforming data features with basis functions.
 
     This class allows the transformation of input data (x) using a variety of
