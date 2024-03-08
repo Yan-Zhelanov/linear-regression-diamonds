@@ -56,10 +56,12 @@ class BasisFunctionTransform(object):
         self,
         function_type: BasisFunctionType = BasisFunctionType.WITHOUT,
         with_bias: bool = True,
+        max_degree: int = 3,
         **kwargs,
     ) -> None:
         self._basis_function = self._get_basis_function(function_type)
         self._with_bias = with_bias
+        self._max_degree = max_degree
         self._function_params = kwargs
         self._params: Dict[str, int] = {}
 
