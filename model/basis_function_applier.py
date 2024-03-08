@@ -290,5 +290,5 @@ class BasisFunctionApplier(object):
         """
         if self._with_bias:
             ones = np.ones((features.shape[0], 1))
-            return np.concatenate((ones, features))
+            return np.concatenate((ones, features), axis=1)
         return features
