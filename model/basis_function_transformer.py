@@ -72,7 +72,7 @@ class BasisFunctionTransform(object):
         Returns:
             np.ndarray: The transformed data.
         """
-        if self._basis_function is self._rbf:
+        if self._basis_function is self._apply_rbf:
             return self._basis_function(features, preprocess=True)
         return self._basis_function(features)
 
@@ -94,18 +94,18 @@ class BasisFunctionTransform(object):
     ) -> Callable:
         """Return the basis function object."""
         if function_type == BasisFunctionType.POLYNOMIAL:
-            return self._polynomial
+            return self._apply_polynomial
         if function_type == BasisFunctionType.RBF:
-            return self._rbf
+            return self._apply_rbf
         if function_type == BasisFunctionType.SIGMOID:
             return self._apply_sigmoid
         if function_type == BasisFunctionType.FOURIER:
-            return self._fourier
+            return self._apply_fourier
         if function_type == BasisFunctionType.WITHOUT:
             return self._apply_default
         raise ValueError(f'Unknown basis function type: {function_type}')
 
-    def _polynomial(self, features: np.ndarray) -> np.ndarray:
+    def _apply_polynomial(self, features: np.ndarray) -> np.ndarray:
         """Perform polynomial transformation on the input data.
 
         Transformation formula for input vector x with features
@@ -150,7 +150,7 @@ class BasisFunctionTransform(object):
         #  5) Return transformed_x array.
         return features
 
-    def _rbf(
+    def _apply_rbf(
         self, features: np.ndarray, need_preprocessing: bool = False,
     ) -> np.ndarray:
         """Perform Radial Basis Function (RBF) transformation.
@@ -245,7 +245,7 @@ class BasisFunctionTransform(object):
         """
         return features
 
-    def _fourier(self, features: np.ndarray) -> np.ndarray:
+    def _apply_fourier(self, features: np.ndarray) -> np.ndarray:
         """Perform Fourier transformation on the input data.
 
         The Fourier transformation is defined as:
