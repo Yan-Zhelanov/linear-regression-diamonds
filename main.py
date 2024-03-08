@@ -3,6 +3,10 @@ import pandas as pd
 
 from config.data_config import Config
 from dataset.dataset import DiamondsDataset
+from model.basis_function_applier import (
+    BasisFunctionApplier,
+    BasisFunctionType,
+)
 from model.dummy import Dummy
 from model.linear_regression import LinearRegression
 from utils.enums import SetType
@@ -18,6 +22,12 @@ def main() -> None:
 
     dummy = Dummy()
     dummy.fit(train_data['inputs'], train_data['targets'])
+
+    applier = BasisFunctionApplier(
+        function_type=BasisFunctionType.POLYNOMIAL, with_bias=True,
+    )
+    train_data['inputs'] = applier.apply(train_data['inputs'])
+    valid_data['inputs'] = applier.apply(valid_data['inputs'])
 
     lin_reg_model = LinearRegression(
         number_bases=train_data['inputs'].shape[1] + 1, regularization=0.01,
@@ -38,6 +48,7 @@ def main() -> None:
     print(f'RMSE for dummy validation: {valid_rmse_dummy}')
 
     test_data = dataset(SetType.TEST)
+    test_data['inputs'] = applier.apply(test_data['inputs'])
     test_predictions = lin_reg_model(test_data['inputs'])
 
     test_results_df = pd.DataFrame(
