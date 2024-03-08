@@ -61,6 +61,34 @@ class BasisFunctionTransform(object):
         self._basis_function = self._get_basis_function(function_type)
         self._params: Dict[str, int] = {}
 
+    def preprocess(self, features: np.ndarray) -> np.ndarray:
+        """Make preprocessing for the chosen basis function if needed.
+
+        Args:
+            features: The input data to transform, 2D array (Nxd) with each row
+                represents an input vector. N is number of elements in set,
+                d is the size of feature vector.
+
+        Returns:
+            np.ndarray: The transformed data.
+        """
+        if self._basis_function is self._rbf:
+            return self._basis_function(features, preprocess=True)
+        return self._basis_function(features)
+
+    def transform(self, features: np.ndarray) -> np.ndarray:
+        """Make feature transformation.
+
+        Args:
+            features: The input data to transform, 2D array (Nxd) with each row
+                represents an input vector. N is number of elements in set,
+                d is the size of feature vector.
+
+        Returns:
+            np.ndarray: The transformed data.
+        """
+        return self._basis_function(features)
+
     def _get_basis_function(
         self, function_type: BasisFunctionType,
     ) -> Callable:
@@ -264,31 +292,3 @@ class BasisFunctionTransform(object):
         #     (a column of ones is added to the input array x)
         #  2) Return x
         return features
-
-    def preprocess(self, features: np.ndarray) -> np.ndarray:
-        """Make preprocessing for the chosen basis function if needed.
-
-        Args:
-            features: The input data to transform, 2D array (Nxd) with each row
-                represents an input vector. N is number of elements in set,
-                d is the size of feature vector.
-
-        Returns:
-            np.ndarray: The transformed data.
-        """
-        if self._basis_function is self._rbf:
-            return self._basis_function(features, preprocess=True)
-        return self._basis_function(features)
-
-    def transform(self, features: np.ndarray) -> np.ndarray:
-        """Make feature transformation.
-
-        Args:
-            features: The input data to transform, 2D array (Nxd) with each row
-                represents an input vector. N is number of elements in set,
-                d is the size of feature vector.
-
-        Returns:
-            np.ndarray: The transformed data.
-        """
-        return self._basis_function(features)
