@@ -87,9 +87,7 @@ class LinearRegression:
             OR
             - `a @ b`
         """
-        ones = np.ones((features.shape[0], 1))
-        augmented_features = np.concatenate((ones, features), axis=1)
-        return np.dot(augmented_features, self._weights)
+        return np.dot(features, self._weights)
 
     def _compute_cost_function(
         self, plan_matrix: np.ndarray, targets: np.ndarray,
@@ -113,11 +111,9 @@ class LinearRegression:
             + float(np.mean(regularization))
         )
 
-    def fit(self, inputs: np.ndarray, targets: np.ndarray) -> None:
-        """Trains the model using the normal equation."""
-        ones = np.ones((inputs.shape[0], 1))
-        augmented_inputs = np.concatenate((ones, inputs), axis=1)
-        pseudo_inverse_matrix = self._pseudo_inverse_matrix(augmented_inputs)
+    def fit(self, features: np.ndarray, targets: np.ndarray) -> None:
+        """Train the model using the normal equation."""
+        pseudo_inverse_matrix = self._pseudo_inverse_matrix(features)
         self._weights = self._compute_weights(pseudo_inverse_matrix, targets)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
