@@ -80,7 +80,7 @@ class BasisFunctionApplier(object):
             return self._basis_function(features, preprocess=True)
         return self._basis_function(features)
 
-    def transform(self, features: np.ndarray) -> np.ndarray:
+    def apply(self, features: np.ndarray) -> np.ndarray:
         """Make feature transformation.
 
         Args:
