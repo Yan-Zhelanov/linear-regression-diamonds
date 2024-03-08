@@ -258,7 +258,7 @@ class BasisFunctionApplier(object):
         return features
 
     def _apply_default(self, features: np.ndarray) -> np.ndarray:
-        """The default transformation method applied to the input data.
+        """Apply the default transformation method applied to the input data.
 
         Perform a simple identity transformation on the input data:
             I(x) = x, where 'x' is an input data point.
