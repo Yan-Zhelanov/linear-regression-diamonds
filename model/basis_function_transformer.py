@@ -276,7 +276,7 @@ class BasisFunctionTransform(object):
         Returns:
             np.ndarray: The transformed data.
         """
-        if self._basis_function.__name__ == '_rbf':
+        if self._basis_function is self._rbf:
             return self._basis_function(features, preprocess=True)
         return self._basis_function(features)
 
