@@ -286,11 +286,7 @@ class BasisFunctionTransform(object):
         Returns:
             transformed_x (numpy.ndarray): The transformed data.
         """
-        # TODO
-        #  1) Check the bias parameter. 'bias' parameter should be specified
-        #     in self.function_params:
-        #     >>> self.function_params['bias']
-        #     If 'bias' parameter is not specified the default value is True
-        #     (a column of ones is added to the input array x)
-        #  2) Return x
+        if self._with_bias:
+            ones = np.ones((features.shape[0], 1))
+            return np.concatenate((ones, features))
         return features
