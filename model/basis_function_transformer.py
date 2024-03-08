@@ -55,10 +55,12 @@ class BasisFunctionTransform(object):
     def __init__(
         self,
         function_type: BasisFunctionType = BasisFunctionType.WITHOUT,
+        with_bias: bool = True,
         **kwargs,
     ) -> None:
-        self._function_params = kwargs
         self._basis_function = self._get_basis_function(function_type)
+        self._with_bias = with_bias
+        self._function_params = kwargs
         self._params: Dict[str, int] = {}
 
     def preprocess(self, features: np.ndarray) -> np.ndarray:
@@ -266,7 +268,7 @@ class BasisFunctionTransform(object):
         """
         return features
 
-    def _apply_default(self, features: np.ndarray):
+    def _apply_default(self, features: np.ndarray) -> np.ndarray:
         """The default transformation method applied to the input data.
 
         Perform a simple identity transformation on the input data:
