@@ -133,25 +133,6 @@ class BasisFunctionApplier(object):
                 array: Nx(d*degree) if bias false or Nx(d*degree+1) if bias
                 true.
         """
-        # TODO:
-        #  1) Get max_degree parameter from self.function_params
-        #     >>> self.function_params['max_degree']
-        #     Note that if max_degree is not specified you should use default.
-        #  2) Create an empty list transformed_x
-        #  3) Create a loop to generate polynomial features up to 'max_degree'
-        #       for each feature in the input data.
-        #     - The loop should start at 1 (since degree 0 is handled by the
-        #           bias term if included) and go up to 'max_degree'.
-        #     - Within the loop, raise each feature in the input to the current
-        #           degree and append it to the transformed_x list.
-        #       Note that you do not need to use a loop to raise each feature
-        #           to the current degree, use numpy array feature.
-        #  4) Check the bias parameter. 'bias' parameter should be specified in
-        #       self.function_params:
-        #     >>> self.function_params['bias']
-        #     If 'bias' parameter is not specified the default value is True
-        #       (a column of ones is added to the transformed_x array).
-        #  5) Return transformed_x array.
         polynomial_features = features
         for degree in range(2, self._max_degree + 1):
             polynomial_features = np.concatenate(
