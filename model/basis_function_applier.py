@@ -152,7 +152,13 @@ class BasisFunctionApplier(object):
         #     If 'bias' parameter is not specified the default value is True
         #       (a column of ones is added to the transformed_x array).
         #  5) Return transformed_x array.
-        return features
+        polynomial_features = features
+        for degree in range(2, self._max_degree + 1):
+            polynomial_features = np.concatenate(
+                (polynomial_features, np.power(features, degree)),
+                axis=1,
+            )
+        return self._apply_default(polynomial_features)
 
     def _apply_rbf(
         self, features: np.ndarray, need_preprocessing: bool = False,
