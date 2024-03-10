@@ -24,13 +24,17 @@ def main() -> None:
     dummy.fit(train_data['inputs'], train_data['targets'])
 
     applier = BasisFunctionApplier(
-        function_type=BasisFunctionType.POLYNOMIAL, with_bias=True,
+        function_type=BasisFunctionType.RBF,
+        with_bias=True,
+        count_centers=1500,
+        bandwidth=9,
     )
-    train_data['inputs'] = applier.apply(train_data['inputs'])
+    train_data['inputs'] = applier.preprocess(train_data['inputs'])
     valid_data['inputs'] = applier.apply(valid_data['inputs'])
 
     lin_reg_model = LinearRegression(
-        number_bases=train_data['inputs'].shape[1] + 1, regularization=0.01,
+        number_bases=train_data['inputs'].shape[1] + 1,
+        regularization=0.0000000001,
     )
     lin_reg_model.fit(train_data['inputs'], train_data['targets'])
 
