@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Callable, Dict
+from typing import Callable
 
 import numpy as np
 
@@ -57,13 +57,15 @@ class BasisFunctionApplier(object):
         function_type: BasisFunctionType = BasisFunctionType.WITHOUT,
         with_bias: bool = True,
         max_degree: int = 3,
-        **kwargs,
+        count_centers: int = 10,
+        bandwidth: float = 1.0,
     ) -> None:
         self._basis_function = self._get_basis_function(function_type)
         self._with_bias = with_bias
         self._max_degree = max_degree
-        self._function_params = kwargs
-        self._params: Dict[str, int] = {}
+        self._count_centers = count_centers
+        self._centers = np.array([])
+        self._bandwidth = bandwidth
 
     def preprocess(self, features: np.ndarray) -> np.ndarray:
         """Make preprocessing for the chosen basis function if needed.
@@ -76,8 +78,8 @@ class BasisFunctionApplier(object):
         Returns:
             np.ndarray: The transformed data.
         """
-        if self._basis_function is self._apply_rbf:
-            return self._basis_function(features, preprocess=True)
+        if self._basis_function == self._apply_rbf:
+            return self._basis_function(features, need_preprocessing=True)
         return self._basis_function(features)
 
     def apply(self, features: np.ndarray) -> np.ndarray:
@@ -177,43 +179,27 @@ class BasisFunctionApplier(object):
             least once before using it to transform data, to ensure that
             centers are properly initialized.
         """
-        # TODO
-        #  1) Check the value of the 'preprocess' variable:
-        #     -- If 'preprocess' is True:
-        #       1) Randomly select a subset of the training data to be the
-        #           centers.
-        #          The number of centers is specified in the
-        #           self.function_params:
-        #              >>> self.function_params['centers']
-        #          Please, ensure that the number of centers is not bigger
-        #           than the number of data points in the subset.
-        #          Note that if centers is not specified you should use
-        #           default.
-        #       2) Save selected centers in self.params. These centers would
-        #           be used when preprocess is not False.
-        #     -- If 'preprocess' is False:
-        #       1) Get the previously selected centers stored in 'self.params':
-        #              >>> self.params['centers']
-        #          If self.params does not have key 'centers', raise
-        #          ValueError("The RBF model is not trained. Please call the
-        #           preprocess function before transform to initialize
-        #           centers.").
-        #  2) Calculate RBF:
-        #     1) Compute the RBF transformation for each data point and each
-        #           center with a specified bandwidth. The formula for RBF
-        #           transformation is specified in the comments.
-        #        The value of bandwidth is specified in self.function_params:
-        #            >>> self.function_params['bandwidth']
-        #        Note that if bandwidth is not specified you should use
-        #           default.
-        #     2) Save values in transformed_x variable.
-        #  3) Check the bias parameter. 'bias' parameter should be specified
-        #       in self.function_params:
-        #     >>> self.function_params['bias']
-        #     If 'bias' parameter is not specified the default value is True
-        #       (a column of ones is added to the transformed_x array)
-        #  4) Return transformed_x array.
-        return features
+        if need_preprocessing:
+            if len(features) < self._count_centers:
+                raise ValueError(
+                    'The centers parameter must be lower or equal to the'
+                    + ' number of rows in features. The number of centers:'
+                    + f' {self._count_centers}, the number of features:'
+                    + f' {len(features)}.',
+                )
+            self._centers = features[
+                np.random.choice(features.shape[0], self._count_centers)
+            ]
+        if self._centers.size == 0:
+            raise ValueError(
+                'The RBF model is not trained. Please call the preprocess'
+                + ' function before transform to initialize centers.',
+            )
+        distances = np.linalg.norm(
+            features[:, np.newaxis] - self._centers, axis=2,
+        ) ** 2
+        features = np.exp(-distances / 2 * self._bandwidth ** 2)
+        return self._apply_default(features)
 
     def _apply_sigmoid(self, features: np.ndarray) -> np.ndarray:
         """Perform Sigmoid transformation on the input data.
