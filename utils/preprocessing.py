@@ -57,14 +57,11 @@ class Preprocessing(object):
             features - self._min
         ) / (self._max - self._min)
 
-    def _standardization(
-        self, features: np.ndarray, init: bool = False,
-    ) -> np.ndarray:
+    def _standardization(self, features: np.ndarray) -> np.ndarray:
         """Standardize x with self.params['mean'] and self.params['std']
 
         Args:
             features: feature array
-            init: initialization flag
 
         Returns:
             np.ndarray: standardized features.
